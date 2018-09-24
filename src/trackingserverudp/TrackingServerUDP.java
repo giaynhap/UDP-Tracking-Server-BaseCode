@@ -5,6 +5,7 @@
  */
 package trackingserverudp;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.SocketException;
 import java.util.logging.Level;
@@ -20,11 +21,30 @@ public class TrackingServerUDP {
         try {
             Server server = new Server(40);
             server.listen();
+            initEvent();
         } catch (SocketException ex) {
             Logger.getLogger(TrackingServerUDP.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(TrackingServerUDP.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    public static void initEvent()
+    {
+        MessageAnalysisProcess.getInstance().addEventReveiceData(new IEventReceive() {
+            @Override
+            public void onReceive(DataInputStream stream) {
+                try {
+                    
+                    int command = stream.readInt();
+                    Logger.getLogger("Reveice").log(Level.SEVERE, "Command %d", command);
+                    
+                    
+                } catch (IOException ex) {
+                    Logger.getLogger(TrackingServerUDP.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                  
+            }
+        });
     }
 }
 

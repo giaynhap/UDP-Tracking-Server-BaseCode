@@ -5,16 +5,22 @@
  */
 package trackingserverudp;
  
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.net.DatagramPacket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MessageAnalysisProcess  implements Runnable {
-    public static MessageAnalysisProcess instance;
+    private static MessageAnalysisProcess instance;
     private LinkedBlockingQueue queue;
     private Thread thread;
     private boolean isRunning = false;
+    private ArrayList<IEventReceive> events;
     public static MessageAnalysisProcess getInstance()
     {
         if(instance == null)
@@ -23,17 +29,20 @@ public class MessageAnalysisProcess  implements Runnable {
     }
     private MessageAnalysisProcess()
     {
+        events = new ArrayList<IEventReceive>();
         Logger.getLogger(MessageAnalysisProcess.class.getName()).log(Level.SEVERE,
                   null, "Init MessageAnalysisProcess");
         queue = new LinkedBlockingQueue(); 
     }
-    
+    public void addEventReveiceData(IEventReceive event)
+    {
+            this.events.add(event);
+    }
     public void AddMessage(DatagramPacket input)
     {
         queue.add(input);
         this.start();
     }
-
     public void start()
     {
         isRunning = true;
@@ -66,6 +75,10 @@ public class MessageAnalysisProcess  implements Runnable {
     }
     private void HandlingRawData(DatagramPacket data)     
     {
-        
+         ByteArrayInputStream stream  = new ByteArrayInputStream(data.getData());
+         DataInputStream dataStream = new DataInputStream(stream);
+         for (IEventReceive e : events){
+             e.onReceive(dataStream);
+         }
     }
 }
