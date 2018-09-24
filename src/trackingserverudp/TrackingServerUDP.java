@@ -19,8 +19,8 @@ public class TrackingServerUDP {
     public static void main(String[] args) {
         
         try {
-            Server server = new Server(40);
-            server.listen();
+            Server server = new Server(9191);
+            server.asyncListen();
             initEvent();
         } catch (SocketException ex) {
             Logger.getLogger(TrackingServerUDP.class.getName()).log(Level.SEVERE, null, ex);
@@ -35,8 +35,9 @@ public class TrackingServerUDP {
             public void onReceive(DataInputStream stream) {
                 try {
                     
-                    int command = stream.readInt();
-                    Logger.getLogger("Reveice").log(Level.SEVERE, "Command %d", command);
+                    int command = stream.readByte();
+                    String log = stream.readUTF();
+                    Logger.getLogger("Reveice").log(Level.SEVERE, "Command "+ command+" : Value = "+log);
                     
                     
                 } catch (IOException ex) {

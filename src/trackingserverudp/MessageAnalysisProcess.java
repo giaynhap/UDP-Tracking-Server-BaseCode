@@ -29,19 +29,24 @@ public class MessageAnalysisProcess  implements Runnable {
     }
     private MessageAnalysisProcess()
     {
+        if (events==null)
         events = new ArrayList<IEventReceive>();
         Logger.getLogger(MessageAnalysisProcess.class.getName()).log(Level.SEVERE,
                   null, "Init MessageAnalysisProcess");
         queue = new LinkedBlockingQueue(); 
+         this.start();
     }
     public void addEventReveiceData(IEventReceive event)
     {
+         Logger.getLogger(MessageAnalysisProcess.class.getName()).log(Level.SEVERE, "Add new Event");
+         
             this.events.add(event);
     }
     public void AddMessage(DatagramPacket input)
     {
+      
         queue.add(input);
-        this.start();
+       
     }
     public void start()
     {
@@ -75,7 +80,8 @@ public class MessageAnalysisProcess  implements Runnable {
     }
     private void HandlingRawData(DatagramPacket data)     
     {
-         ByteArrayInputStream stream  = new ByteArrayInputStream(data.getData());
+         byte[] bytes = data.getData();
+         ByteArrayInputStream stream  = new ByteArrayInputStream(bytes);
          DataInputStream dataStream = new DataInputStream(stream);
          for (IEventReceive e : events){
              e.onReceive(dataStream);
