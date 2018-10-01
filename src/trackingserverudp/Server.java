@@ -5,12 +5,15 @@
  */
 package trackingserverudp;
 
+import trackingserverudp.eventinterface.BaseServerEventReceive;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import trackingserverudp.process.MessageAnalysisProcess;
+import trackingserverudp.process.ResponseProcess;
 
 /**
  *
@@ -21,19 +24,33 @@ public class Server {
       private boolean isStop = false;
       private final int MaxBUFFSize = 1024;
       private BaseServerEventReceive receiveProcess;
-      public  Server(int port) throws SocketException
+      private  static Server instance;
+      public static Server getInstance()
       {
-          Logger.getLogger(Server.class.getName()).log(Level.SEVERE , "Start Server at port:"+ port);
-              
-          socket = new DatagramSocket(port);
-          receiveProcess =new BaseServerEventReceive(socket);
+          if (instance == null) 
+              instance = new  Server();
+          return instance;
+      }
+      
+      private  Server()  
+      {
+        
+      }
+      public static void start(int port) throws SocketException
+      {
+          if (getInstance().socket!=null) return;
+          Logger.getLogger(Server.class.getName()).log(Level.INFO , "Start Server at port:"+ port);
+          getInstance().socket = new DatagramSocket(port);
+          getInstance().receiveProcess = new BaseServerEventReceive(getInstance().socket);
+          MessageAnalysisProcess.getInstance();
+          ResponseProcess.getInstance();
       }
  
       public void listen() throws IOException
       {
           while (!isStop)
           {
-               byte[] data = new byte[MaxBUFFSize];
+            byte[] data = new byte[MaxBUFFSize];
             DatagramPacket  request = new DatagramPacket(data, MaxBUFFSize);
             socket.receive(request);
             receiveProcess.onReceive(request,data);

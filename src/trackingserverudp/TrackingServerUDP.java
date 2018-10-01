@@ -5,12 +5,14 @@
  */
 package trackingserverudp;
 
+import trackingserverudp.eventinterface.IEventReceive;
+import trackingserverudp.process.MessageAnalysisProcess;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+/// test
 /**
  *
  * @author Giay Nhap
@@ -19,9 +21,10 @@ public class TrackingServerUDP {
     public static void main(String[] args) {
         
         try {
-            Server server = new Server(9191);
-            server.asyncListen();
+            Server.start(9191);
+            Server.getInstance().asyncListen();
             initEvent();
+            
         } catch (SocketException ex) {
             Logger.getLogger(TrackingServerUDP.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
