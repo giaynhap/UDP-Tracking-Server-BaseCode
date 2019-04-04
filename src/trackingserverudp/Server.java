@@ -16,7 +16,7 @@ import trackingserverudp.process.MessageAnalysisProcess;
 import trackingserverudp.process.ResponseProcess;
 
 /**
- *
+ * Trung ăn cứt
  * @author Giay Nhap
  */
 public class Server {
